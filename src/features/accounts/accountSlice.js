@@ -1,8 +1,11 @@
+import { type } from "@testing-library/user-event/dist/type";
+
 // create state
 const initiaStateAccount = {
   balance: 0,
   loan: 0,
   loanPurpose: "",
+  isLoading: false,
 };
 
 // Define the reducer function for Accounts
@@ -12,6 +15,7 @@ export default function accountReducer(state = initiaStateAccount, action) {
       return {
         ...state,
         balance: state.balance + action.payload,
+        isLoading: false,
       };
 
     case "account/withdraw":
@@ -37,22 +41,46 @@ export default function accountReducer(state = initiaStateAccount, action) {
         loanPurpose: "",
         loan: 0,
       };
+
+    case "account/convertingCurrency":
+      return {
+        ...state,
+        isLoading: true,
+      };
+
     default:
       return state;
   }
 }
 
 // Action creators for Account
-// deposit action
-export function deposit(amount) {
-  return {
-    type: "account/deposit",
-    payload: amount,
+// deposit action (with middleware and Thunks)
+export function deposit(amount, currency) {
+  if (currency === "USD")
+    return {
+      type: "account/deposit",
+      payload: amount,
+    };
+
+  //Making API calls with middelware and Thunks
+  return async function (dispatch, getState) {
+    dispatch({ type: "account/convertingCurrency" });
+
+    const res = await fetch(
+      `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`
+    );
+    const data = await res.json();
+    const converted = data.rates.USD;
+
+    dispatch({
+      type: "account/deposit",
+      payload: converted,
+    });
   };
 }
 
 //  withdraw action
-export function withdraw(amount) {
+export function withdraw(amount, balance) {
   return {
     type: "account/withdraw",
     payload: amount,

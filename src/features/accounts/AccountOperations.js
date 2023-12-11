@@ -10,26 +10,29 @@ function AccountOperations() {
   const [currency, setCurrency] = useState("USD");
 
   const dispatch = useDispatch();
-  const { loan: currentLoan, loanPurpose: currentLoanPurpose } = useSelector(
-    (store) => store.account
-  );
+  const {
+    loan: currentLoan,
+    loanPurpose: currentLoanPurpose,
+    isLoading,
+    balance,
+  } = useSelector((store) => store.account);
 
   function handleDeposit() {
     if (!depositAmount || depositAmount < 0) return;
-    dispatch(deposit(depositAmount));
+    dispatch(deposit(depositAmount, currency));
 
     setDepositAmount("");
   }
 
   function handleWithdrawal() {
-    if (!withdrawalAmount) return;
+    if (!withdrawalAmount || withdrawalAmount > balance) return;
     dispatch(withdraw(withdrawalAmount));
 
     setWithdrawalAmount("");
   }
 
   function handleRequestLoan() {
-    if (!loanAmount || !loanPurpose) return;
+    if (!loanAmount || !loanPurpose || loanAmount < 0) return;
     dispatch(requestLoan(loanAmount, loanPurpose));
 
     setLoanAmount("");
@@ -48,6 +51,7 @@ function AccountOperations() {
           <label>Deposit</label>
           <input
             type="number"
+            min={1}
             value={depositAmount}
             onChange={(e) => setDepositAmount(+e.target.value)}
           />
@@ -60,13 +64,16 @@ function AccountOperations() {
             <option value="GBP">British Pound</option>
           </select>
 
-          <button onClick={handleDeposit}>Deposit {depositAmount}</button>
+          <button onClick={handleDeposit} disabled={isLoading}>
+            {isLoading ? "Converting.." : `Deposit ${depositAmount}`}
+          </button>
         </div>
 
         <div>
           <label>Withdraw</label>
           <input
             type="number"
+            min={1}
             value={withdrawalAmount}
             onChange={(e) => setWithdrawalAmount(+e.target.value)}
           />
@@ -80,6 +87,7 @@ function AccountOperations() {
           <input
             type="number"
             value={loanAmount}
+            min={1}
             onChange={(e) => setLoanAmount(+e.target.value)}
             placeholder="Loan amount"
           />
