@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div>
-      <h1>🏦 The Reduxi Bank ⚛️</h1>
+      <h1>🏦 The React-Redux Bank ⚛️</h1>
       {!fullName ? (
         <CreateCustomer />
       ) : (
