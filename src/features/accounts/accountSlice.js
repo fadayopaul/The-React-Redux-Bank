@@ -1,5 +1,3 @@
-import { type } from "@testing-library/user-event/dist/type";
-
 // create state
 const initiaStateAccount = {
   balance: 0,

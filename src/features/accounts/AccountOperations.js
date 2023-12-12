@@ -22,10 +22,11 @@ function AccountOperations() {
     dispatch(deposit(depositAmount, currency));
 
     setDepositAmount("");
+    setCurrency("USD");
   }
 
   function handleWithdrawal() {
-    if (!withdrawalAmount || withdrawalAmount > balance) return;
+    if (!withdrawalAmount || withdrawalAmount >= balance) return;
     dispatch(withdraw(withdrawalAmount));
 
     setWithdrawalAmount("");
