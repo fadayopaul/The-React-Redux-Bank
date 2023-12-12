@@ -26,7 +26,7 @@ function AccountOperations() {
   }
 
   function handleWithdrawal() {
-    if (!withdrawalAmount || withdrawalAmount >= balance) return;
+    if (!withdrawalAmount || +withdrawalAmount > balance) return;
     dispatch(withdraw(withdrawalAmount));
 
     setWithdrawalAmount("");
